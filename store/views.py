@@ -3,6 +3,11 @@ from .models import Product
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .models import Product
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
+from .forms import SignUpForm
+from django import forms
+
 
 
 def home(request):
@@ -55,3 +60,25 @@ def new_arrivals(request):
     new_arrival_products = Product.objects.order_by('-created_at')[:10]
     # Pass the new arrival products to the template for rendering
     return render(request, 'new_arrivals.html', {'new_arrival_products': new_arrival_products})
+
+
+def register_user(request):
+    form = SignUpForm()
+    if request.method == "POST":
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password1']
+            # log in user
+            user = authenticate(username=username, password=password)
+            login(request, user)
+            messages.success(request,("You have Registered successfully."))
+            return redirect("home")
+        else:
+            messages.success(request,("Whoooops!, There was a problem, please try again"))
+            return redirect('register')
+
+    else:
+        return render(request, 'register.html', {'form':form})
+
