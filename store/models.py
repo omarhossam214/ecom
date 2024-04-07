@@ -1,5 +1,6 @@
 from django.db import models
 import datetime
+from django.utils import timezone
 
 # Categories of products
 class Category(models.Model):
@@ -33,9 +34,10 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, default=1)
     description = models.CharField(max_length=250, default='', blank=True, null=True)
     image = models.ImageField(upload_to='uploads/product/')
-    # add sale stuff
+    created_at = models.DateTimeField(default= timezone.now)
     is_sale = models.BooleanField(default=False)
     sale_price = models.DecimalField(default=0, decimal_places=2, max_digits=6)
+    views_count = models.IntegerField(default=0)
 
 
     def __str__(self):

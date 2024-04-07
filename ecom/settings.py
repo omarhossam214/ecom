@@ -1,5 +1,3 @@
-
-
 from pathlib import Path
 import os
 
@@ -46,7 +44,9 @@ ROOT_URLCONF = 'ecom.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),  # Adjusted line for template directory
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -107,11 +107,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
-STATIC_URL = '/static/'  # Corrected to end with a forward slash
+STATIC_URL = '/static/'  # Corrected line for static URL
 
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',  # Corrected to provide full path to static directory
+    os.path.join(BASE_DIR, 'static'),  # Adjusted line for static files directory
 ]
 
 MEDIA_URL = '/media/'
