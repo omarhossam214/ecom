@@ -11,7 +11,7 @@ urlpatterns = [
   path('new-arrivals/', views.new_arrivals, name='new_arrivals'),
   path('register/', views.register_user, name='register'),
   path('product/ <int:pk>', views.product, name='product'),
-
+  path('category/ <str:foo>', views.category, name='category'),
 
 
 ]
