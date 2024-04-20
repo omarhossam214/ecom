@@ -1,4 +1,4 @@
-
+from store.models import Product
 class Cart():
     def __init__(self,request):
         self.session = request.session
@@ -27,3 +27,12 @@ class Cart():
 
     def __len__(self):
         return len(self.cart)
+    
+    def get_products(self):
+        # get ids from cart
+        product_ids = self.cart.keys()
+        # use ids to lookup products in dataase model
+        products = Product.objects.filter(id__in=product_ids)
+       
+        # return those looked up products
+        return products
