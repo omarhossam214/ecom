@@ -32,15 +32,17 @@
               {% else %}
             
               {{product.price}}
+              </br>ID: {{product.id}}
 
               {% endif %}
 
-            </br></br>
 
 
 
+
+                </br></br>
               <a href="{% url 'home' %}" class= "btn btn-secondary">Home</a>
-            
+              <button type="button" value= "{{product.id}}" class="btn btn-secondary" id="add-cart" >Add To Cart</button>
             
 
               </center>
@@ -49,6 +51,37 @@
         </div>
     </div>
 </div>
+
+
+
+<script>
+  // Handle click event on 'Add to Cart' button
+  $(document).on('click', '#add-cart', function(e){
+    e.preventDefault(); // Prevent the default form submission
+    $.ajax({
+      type: 'POST',
+      url: '{% url 'cart_add' %}',
+      data: {
+        product_id: $('#add-cart').val(), // Send the correct product ID
+        csrfmiddlewaretoken: '{{ csrf_token }}', // Add CSRF token for security
+        action: 'post' // Use lowercase 'post' for consistency
+      },
+      success: function(json){
+        // Log success message to console
+        console.log('Product added to cart successfully:', json);
+        // You can handle success response here if needed
+      },
+      error: function(xhr, errmsg, err){
+        // Log error message to console
+        console.error('Error adding product to cart:', errmsg);
+        // You can display an error message to the user here if needed
+      }
+    });
+})
+</script>
+
+  
+
 
 
 
