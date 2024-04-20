@@ -67,8 +67,11 @@
         action: 'post' // Use lowercase 'post' for consistency
       },
       success: function(json){
+        document.getElementById("cart_quantity").
+          textContent = json.Quantity
+
         // Log success message to console
-        console.log('Product added to cart successfully:', json);
+        // console.log('Product added to cart successfully:', json);
         // You can handle success response here if needed
       },
       error: function(xhr, errmsg, err){

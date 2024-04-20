@@ -23,7 +23,9 @@ def cart_add(request):
                 # save to session
                 cart.add(product=product)
                 # return a response
-                return JsonResponse({'Product Name': product.name})
+                # return JsonResponse({'Product Name': product.name})
+                cart_quantity = cart.__len__()
+                return JsonResponse({'Quantity': cart_quantity})
             except ValueError:
                 # Handle the case where 'product_id' is not a valid integer
                 return HttpResponseBadRequest("Invalid product ID")
