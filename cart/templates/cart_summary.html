@@ -43,11 +43,33 @@
                     </br>ID: {{product.id}}
         
                     {% endif %}
-        
-        
-        
-        
-        
+                        </br></br>
+                        <div class="row justify-content-center mt-3">
+                            <div class="col-md-6">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        Quantity:
+                                    </div>
+                                    <div class="col-md-6">
+                                        <select class="form-select form-select-sm" id="qty-cart">
+                                            
+                                                {% for key, value in quantities.items %}
+                                                    {% if key == product.id|slugify %}
+                                                    <option selected>{{value}}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+
+                                            
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         </br></br>
                     <a href="{% url 'home' %}" class= "btn btn-secondary">Home</a>
         
@@ -68,6 +90,7 @@
 
 
         {% endif %}
+
     </div>
 
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>

@@ -7,8 +7,9 @@ def cart_summary(request):
     # get the cart
     cart = Cart(request)
     cart_products = cart.get_products
+    quantities = cart.get_quants
 
-    return render(request, 'cart_summary.html', {"cart_products":cart_products})
+    return render(request, 'cart_summary.html', {"cart_products":cart_products, "quantities":quantities})
 
 def cart_add(request):
     # get the cart
@@ -16,6 +17,7 @@ def cart_add(request):
 
     if request.method == 'POST' and request.POST.get('action') == 'post':
         product_id_str = request.POST.get('product_id')
+        product_qty = int(request.POST.get('product_qty'))
         
         # Check if 'product_id_str' is provided and not empty
         if product_id_str:
@@ -25,7 +27,7 @@ def cart_add(request):
                 # lookup product in database
                 product = get_object_or_404(Product, id=product_id)
                 # save to session
-                cart.add(product=product)
+                cart.add(product=product, quantity=product_qty)
                 # return a response
                 # return JsonResponse({'Product Name': product.name})
                 cart_quantity = cart.__len__()
