@@ -1,46 +1,75 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .cart import Cart
 from store.models import Product
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse
+from django.contrib import messages
 
 def cart_summary(request):
-    # get the cart
-    cart = Cart(request)
-    cart_products = cart.get_products
-    quantities = cart.get_quants
+	# Get the cart
+	cart = Cart(request)
+	cart_products = cart.get_prods
+	quantities = cart.get_quants
+	return render(request, "cart_summary.html", {"cart_products":cart_products, "quantities":quantities})
 
-    return render(request, 'cart_summary.html', {"cart_products":cart_products, "quantities":quantities})
+
+
 
 def cart_add(request):
-    # get the cart
-    cart = Cart(request)
+	# Get the cart
+	cart = Cart(request)
+	# test for POST
+	if request.POST.get('action') == 'post':
+		# Get stuff
+		product_id = int(request.POST.get('product_id'))
+		product_qty = int(request.POST.get('product_qty'))
 
-    if request.method == 'POST' and request.POST.get('action') == 'post':
-        product_id_str = request.POST.get('product_id')
-        product_qty = int(request.POST.get('product_qty'))
-        
-        # Check if 'product_id_str' is provided and not empty
-        if product_id_str:
-            try:
-                # Convert 'product_id_str' to an integer
-                product_id = int(product_id_str)
-                # lookup product in database
-                product = get_object_or_404(Product, id=product_id)
-                # save to session
-                cart.add(product=product, quantity=product_qty)
-                # return a response
-                # return JsonResponse({'Product Name': product.name})
-                cart_quantity = cart.__len__()
-                return JsonResponse({'Quantity': cart_quantity})
-            except ValueError:
-                # Handle the case where 'product_id' is not a valid integer
-                return HttpResponseBadRequest("Invalid product ID")
-        else:
-            # Handle the case where 'product_id' is not provided
-            return HttpResponseBadRequest("Product ID is required")
+		# lookup product in DB
+		product = get_object_or_404(Product, id=product_id)
+		
+		# Save to session
+		cart.add(product=product, quantity=product_qty)
 
-def cart_delete(request):
-    pass
+		# Get Cart Quantity
+		cart_quantity = cart.__len__()
+
+		# Return resonse
+		# response = JsonResponse({'Product Name: ': product.name})
+		response = JsonResponse({'qty': cart_quantity})
+		messages.success(request, ("Product Added To Cart..."))
+		return response
+	
+
 
 def cart_update(request):
-    pass
+    if request.method == 'POST' and 'product_qty' in request.POST:
+        try:
+            # Get the product ID and quantity from the POST request
+            product_id = int(request.POST.get('product_id'))
+            product_qty_str = request.POST.get('product_qty')
+
+            # Check if the quantity string is not empty
+            if product_qty_str.strip():
+                product_qty = int(product_qty_str)
+            else:
+                # If quantity is empty, raise a ValueError
+                raise ValueError("Product quantity is empty")
+
+            # Update the cart with the new quantity
+            cart = Cart(request)  # Instantiate the Cart class with the request object
+            cart.update(product=product_id, quantity=product_qty)
+
+            # Prepare JSON response
+            response = JsonResponse({'qty': product_qty})
+
+            # Optionally, you can redirect to another page or display a success message
+            # return redirect('cart_summary')
+            messages.success(request, "Your Cart Has Been Updated...")
+
+            return response
+        except ValueError as e:
+            # Handle the ValueError (e.g., log the error, return an error response)
+            return JsonResponse({'error': str(e)}, status=400)
+
+	
+def cart_delete(request):
+	pass

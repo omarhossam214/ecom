@@ -4,15 +4,16 @@ class Cart():
         self.session = request.session
 
         # Get the current session if it exists
-        cart = self.session.get('session_key')
+        cart = self.session.get('cart')
 
-        # if the user is new, no session key! create one !
-        if 'session_key' not in request.session:
-            cart = self.session['session_key'] = {}
-
+        # if the user is new, no cart! create one !
+        if 'cart' not in request.session:
+            cart = self.session['cart'] = {}
 
         # Make sure cart is available on all pages of site
         self.cart = cart
+
+
 
     def add(self, product,quantity):
         product_id = str(product.id)
@@ -30,7 +31,7 @@ class Cart():
     def __len__(self):
         return len(self.cart)
     
-    def get_products(self):
+    def get_prods(self):
         # get ids from cart
         product_ids = self.cart.keys()
         # use ids to lookup products in dataase model
@@ -42,3 +43,18 @@ class Cart():
     def get_quants(self):
         quantities = self.cart
         return quantities
+    
+    def update(self, product, quantity):
+        product_id = str(product)
+        product_qty = int(quantity)
+
+        # get cart
+        ourcart = self.cart
+        # update dictionaries
+        ourcart[product_id] = product_qty
+
+        self.session.modified = True
+
+        thing = self.cart
+
+        return thing
