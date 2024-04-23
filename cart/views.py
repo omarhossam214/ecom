@@ -5,39 +5,35 @@ from django.http import JsonResponse
 from django.contrib import messages
 
 def cart_summary(request):
-	# Get the cart
-	cart = Cart(request)
-	cart_products = cart.get_prods
-	quantities = cart.get_quants
-	return render(request, "cart_summary.html", {"cart_products":cart_products, "quantities":quantities})
-
-
+    # Get the cart
+    cart = Cart(request)
+    cart_products = cart.get_prods()
+    quantities = cart.get_quants()
+    return render(request, "cart_summary.html", {"cart_products": cart_products, "quantities": quantities})
 
 
 def cart_add(request):
-	# Get the cart
-	cart = Cart(request)
-	# test for POST
-	if request.POST.get('action') == 'post':
-		# Get stuff
-		product_id = int(request.POST.get('product_id'))
-		product_qty = int(request.POST.get('product_qty'))
+    # Get the cart
+    cart = Cart(request)
+    # Test for POST
+    if request.POST.get('action') == 'post':
+        # Get stuff
+        product_id = int(request.POST.get('product_id'))
+        product_qty = int(request.POST.get('product_qty'))
 
-		# lookup product in DB
-		product = get_object_or_404(Product, id=product_id)
-		
-		# Save to session
-		cart.add(product=product, quantity=product_qty)
+        # Lookup product in DB
+        product = get_object_or_404(Product, id=product_id)
+        
+        # Save to session
+        cart.add(product=product, quantity=product_qty)
 
-		# Get Cart Quantity
-		cart_quantity = cart.__len__()
+        # Get Cart Quantity
+        cart_quantity = len(cart)
 
-		# Return resonse
-		# response = JsonResponse({'Product Name: ': product.name})
-		response = JsonResponse({'qty': cart_quantity})
-		messages.success(request, ("Product Added To Cart..."))
-		return response
-	
+        # Return response
+        response = JsonResponse({'qty': cart_quantity})
+        messages.success(request, "Product Added To Cart...")
+        return response
 
 
 def cart_update(request):
@@ -70,6 +66,19 @@ def cart_update(request):
             # Handle the ValueError (e.g., log the error, return an error response)
             return JsonResponse({'error': str(e)}, status=400)
 
-	
+
 def cart_delete(request):
-	pass
+    cart = Cart(request)
+    if request.method == 'POST' and 'product_id' in request.POST:
+        # Get product ID from POST data
+        product_id = int(request.POST.get('product_id'))
+        # Call delete function in cart
+        cart.delete(product=product_id)
+        # Prepare JSON response
+        response = JsonResponse({'success': 'Product removed from cart successfully'})
+        return response
+    else:
+        # If product ID is not found in POST data, return an error response
+        response = JsonResponse({'error': 'Product ID not provided or invalid'})
+        response.status_code = 400
+        return response

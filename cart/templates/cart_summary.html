@@ -66,6 +66,7 @@
                                 </br></br>
                                 <a href="{% url 'home' %}" class= "btn btn-secondary">Home</a>
                                 <button type="button" data-index="{{product.id}}" class="btn btn-secondary update-cart">Update</button>
+                                <button type="button" data-index="{{product.id}}" class="btn btn-danger delete-product">Remove</button>
                             </center>
                         </div>
                     </div>
@@ -85,6 +86,7 @@
 
 
     <script>
+        // Update cart
         // Update the AJAX request to send the correct data
         $(document).on('click', '.update-cart', function(e){
             e.preventDefault(); // Prevent the default form submission
@@ -106,6 +108,31 @@
                 error: function(xhr, errmsg, err){
                     // Log error message to console
                     console.error('Error updating product quantity!', errmsg);
+                    // You can display an error message to the user here if needed
+                }
+            });
+        })
+        // Remove item from cart
+        // Update the AJAX request to send the correct data
+        $(document).on('click', '.delete-product', function(e){
+            e.preventDefault(); // Prevent the default form submission
+            // grab the product id
+            var productid = $(this).data('index');
+            
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'cart_delete' %}',
+                data: {
+                    product_id: productid, // Send the correct product ID
+                    csrfmiddlewaretoken: '{{ csrf_token }}', // Add CSRF token for security
+                    action: 'post' // Use lowercase 'post' for consistency
+                },
+                success: function(json){
+                    location.reload()
+                },
+                error: function(xhr, errmsg, err){
+                    // Log error message to console
+                    console.error('Error deleting product from cart!', errmsg);
                     // You can display an error message to the user here if needed
                 }
             });
